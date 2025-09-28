@@ -3,8 +3,5 @@
         "src"
     ],
     "ext": "ts",
-    "ignore": [
-        "dist"
-    ],
-    "exec": "ts-node src/index.ts"
+    "exec": "npx tsc && node dist/index.js"
 }
