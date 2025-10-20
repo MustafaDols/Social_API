@@ -11,7 +11,12 @@ class BaseRepository {
     async findOneDocument(filters, projection, options) {
         return await this.model.findOne(filters, projection, options);
     }
-    findDocumentById() { }
+    async findDocumentById(id, projection, options) {
+        return await this.model.findById(id, projection, options);
+    }
+    async deleteByIdDocument(id) {
+        return await this.model.findByIdAndDelete(id);
+    }
     updateOneDocument() { }
     updateMultipleDocuments() { }
     deleteOneDocument() { }

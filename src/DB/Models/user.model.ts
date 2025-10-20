@@ -47,7 +47,7 @@ const userSchema = new mongoose.Schema<IUser>({
         default: ProviderEnum.LOCAL
     },
     googleId: String,
-    phoneNumber: String,
+    phoneNumber: String,   
     OTPS: [{
         value: { type: String, required: true },
         expiresAt: { type: Date, default: Date.now() + 600000 },  // default 10 min from now

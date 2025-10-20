@@ -1,9 +1,11 @@
 import { Document } from "mongoose";
 import { GenderEnum, ProviderEnum, RoleEnum, OtpTypesEnum } from "..";
+import { Request } from "express";
+import { JwtPayload } from "jsonwebtoken";
 
 interface IOtp {
-    value: string,
-    expiresAt: number,
+    value: string;
+    expiresAt: number;
     otpType: OtpTypesEnum;
 }
 
@@ -25,12 +27,21 @@ interface IUser extends Document {
 }
 
 interface IEmailArgument {
-
     to: string,
     cc?: string,
     subject: string,
     content: string,
-    attachments?: string[]
+    attachments?: []
 }
 
-export { IUser, IEmailArgument }
+interface IRequest extends Request {
+    loggedInUser: { user: IUser, token: JwtPayload }
+}
+
+interface IBlackListedToken extends Document {
+    tokenId: string,
+    expiresAt: Date
+}
+
+
+export { IUser, IEmailArgument, IRequest, IBlackListedToken }

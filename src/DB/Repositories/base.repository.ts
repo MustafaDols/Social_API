@@ -1,5 +1,5 @@
 
-import { FilterQuery, Model, ProjectionType , QueryOptions} from "mongoose";
+import mongoose, { FilterQuery, Model, ProjectionType, QueryOptions } from "mongoose";
 
 
 
@@ -15,8 +15,14 @@ export class BaseRepository<T> {
         return await this.model.findOne(filters, projection, options)
     }
 
+    async findDocumentById(id: mongoose.Schema.Types.ObjectId, projection?: ProjectionType<T>, options?: QueryOptions<T>): Promise<T | null> {
+        return await this.model.findById(id, projection, options)
+    }
 
-    findDocumentById() { }
+    async deleteByIdDocument(id: mongoose.Schema.Types.ObjectId) {
+        return await this.model.findByIdAndDelete(id)
+    }
+
     updateOneDocument() { }
     updateMultipleDocuments() { }
     deleteOneDocument() { }

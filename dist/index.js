@@ -40,6 +40,8 @@ require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const controllers = __importStar(require("./Modules/controllers.index"));
 const db_connection_1 = require("./DB/db.connection");
+const Utils_1 = require("./Utils");
+const response_helper_utils_1 = require("./Utils/Response/response-helper.utils");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 (0, db_connection_1.dbConnection)();
@@ -50,12 +52,17 @@ app.use("/api/comments", controllers.commentsController);
 app.use("/api/reacts", controllers.reactsController);
 //Error Handling Middleware
 app.use((err, req, res, next) => {
-    const status = 500;
-    const message = "Something went wrong";
-    res.status(status).json({ message: err?.message || message });
+    if (err) {
+        if (err instanceof Utils_1.HttpException) {
+            return res.status(err.statusCode).json((0, response_helper_utils_1.FailedResponse)(err.message, err.statusCode, err.error));
+        }
+        else {
+            res.status(500).json((0, response_helper_utils_1.FailedResponse)(err.message, 500, err));
+        }
+    }
 });
 // Start server
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server running on port : ${port}`);
 });

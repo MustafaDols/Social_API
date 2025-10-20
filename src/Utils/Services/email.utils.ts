@@ -40,4 +40,4 @@ export const emitter = new EventEmitter()
 emitter.on('sendEmail', (args:IEmailArgument) => {
     console.log('the sending Email event is started');
     sendEmail(args)
-})
+}) 
