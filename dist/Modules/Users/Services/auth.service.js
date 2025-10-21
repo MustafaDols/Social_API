@@ -18,7 +18,7 @@ class AuthService {
         this.userRepo = new user_repository_1.UserRepository(Models_1.UserModel);
         this.blackListedRepo = new black_listed_repository_1.BlackListedRepository(Models_1.BlacklistedTokensModel);
         this.signUp = async (req, res, next) => {
-            const { firstName, lastName, email, password, gender, DOB, phoneNumber } = req.body;
+            const { firstName, lastName, email, password, gender, phoneNumber, DOB } = req.body;
             const isEmailExists = await this.userRepo.findOneDocument({ email }, 'email');
             if (isEmailExists)
                 return res.status(409).json({ message: 'Email already exists', data: { invalidEmail: email } });

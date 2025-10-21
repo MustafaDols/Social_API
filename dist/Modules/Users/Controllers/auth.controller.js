@@ -7,10 +7,11 @@ exports.authController = void 0;
 const express_1 = require("express");
 const auth_service_1 = __importDefault(require("../Services/auth.service"));
 const Middlewares_1 = require("../../../Middlewares");
+const Validators_1 = require("../../../Validators");
 const authController = (0, express_1.Router)();
 exports.authController = authController;
 // signup
-authController.post('/signUp', auth_service_1.default.signUp);
+authController.post('/signUp', (0, Middlewares_1.ValidatonMiddleware)(Validators_1.SignUpValidator), auth_service_1.default.signUp);
 // signin
 authController.post('/signIn', auth_service_1.default.SignIn);
 // confirm email

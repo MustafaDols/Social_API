@@ -1,6 +1,6 @@
 import { BlackListedRepository } from './../../../DB/Repositories/black-listed.repository';
 import { Request, Response, NextFunction } from "express"
-import { IUser, OtpTypesEnum, IRequest } from "../../../Common"
+import { IUser, OtpTypesEnum, IRequest, SignUpBodyType } from "../../../Common"
 import { UserRepository } from "../../../DB/Repositories/user.repository"
 import { BlacklistedTokensModel, UserModel } from "../../../DB/Models"
 import { encrypt, generateHash } from "../../../Utils"
@@ -9,8 +9,6 @@ import { compareHash } from "../../../Utils/Encryption/hash.utils"
 import { generateToken } from "../../../Utils/Encryption/token.utils"
 import uuid from 'uuid';
 import { SignOptions } from "jsonwebtoken"
-import { VerifyOptions } from "jsonwebtoken"
-import { compareSync } from 'bcrypt';
 import { SuccessResponse } from '../../../Utils/Response/response-helper.utils';
 
 
@@ -20,7 +18,7 @@ class AuthService {
     private blackListedRepo: BlackListedRepository = new BlackListedRepository(BlacklistedTokensModel)
 
     signUp = async (req: Request, res: Response, next: NextFunction) => {
-        const { firstName, lastName, email, password, gender, DOB, phoneNumber }: Partial<IUser> = req.body
+        const { firstName, lastName, email, password, gender, phoneNumber , DOB}: SignUpBodyType = req.body
 
         const isEmailExists = await this.userRepo.findOneDocument({ email }, 'email')
         if (isEmailExists) return res.status(409).json({ message: 'Email already exists', data: { invalidEmail: email } })
@@ -47,7 +45,7 @@ class AuthService {
         }
 
         const newUser = await this.userRepo.createNewDocument({
-            firstName, 
+            firstName,
             lastName,
             email,
             password: hashedPassword,
