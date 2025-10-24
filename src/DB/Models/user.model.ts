@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import { GenderEnum, ProviderEnum, RoleEnum, OtpTypesEnum, IUser } from "../../Common";
+import { generateHash, encrypt, decrypt } from "../../Utils";
+import { S3ClientService } from "../../Utils"
 
 const userSchema = new mongoose.Schema<IUser>({
     firstName: {
@@ -47,7 +49,7 @@ const userSchema = new mongoose.Schema<IUser>({
         default: ProviderEnum.LOCAL
     },
     googleId: String,
-    phoneNumber: String,   
+    phoneNumber: String,
     OTPS: [{
         value: { type: String, required: true },
         expiresAt: { type: Date, default: Date.now() + 600000 },  // default 10 min from now
@@ -55,6 +57,43 @@ const userSchema = new mongoose.Schema<IUser>({
 
     }]
 })
+
+// Document middleware
+userSchema.pre("save", function () {
+    if (this.isModified("password")) {
+        // hash password
+        this.password = generateHash(this.password as string);
+    }
+
+    if (this.isModified("phoneNumber")) {
+        // encrypt phone number
+        this.phoneNumber = encrypt(this.phoneNumber as string);
+    }
+});
+
+// Query middleware
+userSchema.post(/^find/, function (doc) {
+    if ((this as unknown as { op: string }).op === 'find') {
+        doc.forEach((user: IUser) => {
+            if (user.phoneNumber) {
+                user.phoneNumber = decrypt(user.phoneNumber as string)
+            }
+        })
+    } else {
+        if (doc && doc.phoneNumber) {
+            doc.phoneNumber = decrypt(doc.phoneNumber as string)
+        }
+    }
+})
+
+userSchema.post('findOneAndDelete', async function (doc) {
+    const S3Service = new S3ClientService()
+    if (doc.profilePicture) {
+        await S3Service.DeleteFileFromS3(doc.profilePicture)
+    }
+})
+
+ 
 
 
 const UserModel = mongoose.model<IUser>("User", userSchema);

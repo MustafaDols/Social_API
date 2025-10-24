@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserModel = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const Common_1 = require("../../Common");
+const Utils_1 = require("../../Utils");
+const Utils_2 = require("../../Utils");
 const userSchema = new mongoose_1.default.Schema({
     firstName: {
         type: String,
@@ -58,6 +60,38 @@ const userSchema = new mongoose_1.default.Schema({
             expiresAt: { type: Date, default: Date.now() + 600000 }, // default 10 min from now
             otpType: { type: String, enum: Common_1.OtpTypesEnum, required: true },
         }]
+});
+// Document middleware
+userSchema.pre("save", function () {
+    if (this.isModified("password")) {
+        // hash password
+        this.password = (0, Utils_1.generateHash)(this.password);
+    }
+    if (this.isModified("phoneNumber")) {
+        // encrypt phone number
+        this.phoneNumber = (0, Utils_1.encrypt)(this.phoneNumber);
+    }
+});
+// Query middleware
+userSchema.post(/^find/, function (doc) {
+    if (this.op === 'find') {
+        doc.forEach((user) => {
+            if (user.phoneNumber) {
+                user.phoneNumber = (0, Utils_1.decrypt)(user.phoneNumber);
+            }
+        });
+    }
+    else {
+        if (doc && doc.phoneNumber) {
+            doc.phoneNumber = (0, Utils_1.decrypt)(doc.phoneNumber);
+        }
+    }
+});
+userSchema.post('findOneAndDelete', async function (doc) {
+    const S3Service = new Utils_2.S3ClientService();
+    if (doc.profilePicture) {
+        await S3Service.DeleteFileFromS3(doc.profilePicture);
+    }
 });
 const UserModel = mongoose_1.default.model("User", userSchema);
 exports.UserModel = UserModel;

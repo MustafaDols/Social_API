@@ -44,6 +44,31 @@ export class profileService {
 
         res.json(SuccessResponse<unknown>('Account deleted successfully', 200, deletedResponse))
     }
+
+    updateProfile = async (req: Request, res: Response) => {
+        // const { user: {_id }} = (req as unknown as IRequest).loggedInUser
+        const { firstName, lastName, email, password, gender, phoneNumber, DOB } = req.body
+
+        // const user = await this.userRepo.findDocumentById(_id as mongoose.Schema.Types.ObjectId)
+        // if (!user) throw new BadRequestException("User not found")
+
+        // if (firstName) user.firstName = firstName
+        // if (lastName) user.lastName = lastName
+        // if (email) user.email = email
+        // if (password) user.password = password
+        // if (gender) user.gender = gender
+        // if (phoneNumber) user.phoneNumber = phoneNumber
+        // if (DOB) user.DOB = DOB
+
+        // await user.save()
+
+        await this.userRepo.updateOneDocument(
+            { _id: req.params._id, email },
+            { $set: { firstName, lastName, email, password, gender, phoneNumber, DOB } },
+            { new: true }
+        )
+        res.json(SuccessResponse<unknown>('Profile updated successfully', 200))
+    }
 }
 
 export default new profileService() 

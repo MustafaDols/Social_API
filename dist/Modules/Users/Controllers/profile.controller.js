@@ -10,6 +10,7 @@ const profile_service_1 = __importDefault(require("../Services/profile.service")
 const profileController = (0, express_1.Router)();
 exports.profileController = profileController;
 // update profile
+profileController.put("/update-profile/:id", profile_service_1.default.updateProfile);
 // delete profile
 profileController.delete("/delete-account", Middlewares_1.authentication, profile_service_1.default.deleteAccount);
 // get profile data

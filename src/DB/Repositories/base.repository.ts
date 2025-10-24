@@ -1,5 +1,5 @@
 
-import mongoose, { FilterQuery, Model, ProjectionType, QueryOptions } from "mongoose";
+import mongoose, { FilterQuery, Model, ProjectionType, QueryOptions, UpdateQuery } from "mongoose";
 
 
 
@@ -23,7 +23,9 @@ export class BaseRepository<T> {
         return await this.model.findByIdAndDelete(id)
     }
 
-    updateOneDocument() { }
+    async updateOneDocument(filters: FilterQuery<T>, updatedObject: UpdateQuery<T>, options?: QueryOptions<T>) {
+        return await this.model.findOneAndUpdate( filters, updatedObject, options)
+    }
     updateMultipleDocuments() { }
     deleteOneDocument() { }
     deleteMultipleDocuments() { }

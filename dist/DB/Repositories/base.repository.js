@@ -17,7 +17,9 @@ class BaseRepository {
     async deleteByIdDocument(id) {
         return await this.model.findByIdAndDelete(id);
     }
-    updateOneDocument() { }
+    async updateOneDocument(filters, updatedObject, options) {
+        return await this.model.findOneAndUpdate(filters, updatedObject, options);
+    }
     updateMultipleDocuments() { }
     deleteOneDocument() { }
     deleteMultipleDocuments() { }

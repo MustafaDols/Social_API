@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { authentication , Multer} from "../../../Middlewares";
+import { authentication, Multer } from "../../../Middlewares";
 import profileService from "../Services/profile.service";
 const profileController = Router();
 
 // update profile
+profileController.put("/update-profile/:id", profileService.updateProfile)
 
 // delete profile
 profileController.delete("/delete-account", authentication, profileService.deleteAccount)
@@ -12,7 +13,7 @@ profileController.delete("/delete-account", authentication, profileService.delet
 
 // upload profile picture
 profileController.post("/upload-profile", authentication, Multer().single("profilePicture"), profileService.uploadProfilePicture)
- 
+
 // upload cover picture
 
 // list all users 
