@@ -21,4 +21,14 @@ profileController.post("/upload-profile", authentication, Multer().single("profi
 // renew signed url 
 profileController.post("/renew-signed-url", authentication, profileService.renewSignedUrl)
 
+// send friend request
+profileController.post("/send-friend-request", authentication, profileService.sendFriendShipRequest)
+
+// list friend requests
+profileController.get("/list-friend-requests", authentication, profileService.listFriendRequests)
+
+// respond to friend request
+profileController.patch("/respond-to-friend-request", authentication, profileService.respondToFriendRequest)
+
+
 export { profileController }

@@ -20,3 +20,9 @@ profileController.post("/upload-profile", Middlewares_1.authentication, (0, Midd
 // list all users 
 // renew signed url 
 profileController.post("/renew-signed-url", Middlewares_1.authentication, profile_service_1.default.renewSignedUrl);
+// send friend request
+profileController.post("/send-friend-request", Middlewares_1.authentication, profile_service_1.default.sendFriendShipRequest);
+// list friend requests
+profileController.get("/list-friend-requests", Middlewares_1.authentication, profile_service_1.default.listFriendRequests);
+// respond to friend request
+profileController.patch("/respond-to-friend-request", Middlewares_1.authentication, profile_service_1.default.respondToFriendRequest);

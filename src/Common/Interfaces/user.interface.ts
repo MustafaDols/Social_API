@@ -1,5 +1,5 @@
-import { Document } from "mongoose";
-import { GenderEnum, ProviderEnum, RoleEnum, OtpTypesEnum } from "..";
+import { Document, Types } from "mongoose";
+import { GenderEnum, ProviderEnum, RoleEnum, OtpTypesEnum, FriendShipStatusEnum } from "..";
 import { Request } from "express";
 import { JwtPayload } from "jsonwebtoken";
 
@@ -9,7 +9,7 @@ interface IOtp {
     otpType: OtpTypesEnum;
 }
 
-interface IUser extends Document {
+interface IUser extends Document<Types.ObjectId> {
     firstName: string;
     lastName: string;
     email: string;
@@ -43,5 +43,10 @@ interface IBlackListedToken extends Document {
     expiresAt: Date
 }
 
+interface IFriendShip extends Document <Types.ObjectId>{
+    requestFromId: Types.ObjectId,
+    requestToId: Types.ObjectId,
+    status: FriendShipStatusEnum
+}
 
-export { IUser, IEmailArgument, IRequest, IBlackListedToken }
+export { IUser, IEmailArgument, IRequest, IBlackListedToken, IFriendShip }

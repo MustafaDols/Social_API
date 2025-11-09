@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.profileService = void 0;
 const Utils_1 = require("../../../Utils");
+const Common_1 = require("../../../Common");
 const response_helper_utils_1 = require("../../../Utils/Response/response-helper.utils");
 const Models_1 = require("../../../DB/Models");
 const Repositories_1 = require("../../../DB/Repositories");
@@ -9,6 +10,7 @@ class profileService {
     constructor() {
         this.s3Client = new Utils_1.S3ClientService();
         this.userRepo = new Repositories_1.UserRepository(Models_1.UserModel);
+        this.friendShipRepo = new Repositories_1.FriendShipRepository();
         this.uploadProfilePicture = async (req, res) => {
             const { file } = req;
             const { user } = req.loggedInUser;
@@ -51,6 +53,47 @@ class profileService {
             // await user.save()
             await this.userRepo.updateOneDocument({ _id: req.params._id, email }, { $set: { firstName, lastName, email, password, gender, phoneNumber, DOB } }, { new: true });
             res.json((0, response_helper_utils_1.SuccessResponse)('Profile updated successfully', 200));
+        };
+        this.sendFriendShipRequest = async (req, res) => {
+            const { user: { _id } } = req.loggedInUser;
+            const { requestToId } = req.body;
+            const user = await this.userRepo.findDocumentById(requestToId);
+            if (!user)
+                throw new Utils_1.BadRequestException('User not found');
+            this.friendShipRepo.createNewDocument({ requestFromId: _id, requestToId });
+            res.json((0, response_helper_utils_1.SuccessResponse)('Friend ship request sent successfully', 200));
+        };
+        this.listFriendRequests = async (req, res) => {
+            const { user: { _id } } = req.loggedInUser;
+            const { status } = req.query;
+            const filters = { status: status ? status : Common_1.FriendShipStatusEnum.PENDING };
+            if (filters.status == Common_1.FriendShipStatusEnum.ACCEPTED)
+                filters.$or = [{ requestToId: _id }, { requestFromId: _id }];
+            else
+                filters.requestToId = _id;
+            const requests = await this.friendShipRepo.findDocuments(filters, undefined, {
+                populate: [
+                    {
+                        path: 'requestFromId',
+                        select: 'firstName lastName profilePicture'
+                    },
+                    {
+                        path: 'requestToId',
+                        select: 'firstName lastName profilePicture'
+                    }
+                ]
+            });
+            res.json((0, response_helper_utils_1.SuccessResponse)('Requests fetched successfully', 200, requests));
+        };
+        this.respondToFriendRequest = async (req, res) => {
+            const { user: { _id } } = req.loggedInUser;
+            const { friendRequestId, respone } = req.body;
+            const friendRequest = await this.friendShipRepo.findOneDocument({ _id: friendRequestId, requestToId: _id, status: Common_1.FriendShipStatusEnum.PENDING });
+            if (!friendRequest)
+                throw new Utils_1.BadRequestException('Friend request not found');
+            friendRequest.status = respone;
+            await friendRequest.save();
+            res.json((0, response_helper_utils_1.SuccessResponse)('Requests fetched successfully', 200, friendRequest));
         };
     }
 }
