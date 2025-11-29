@@ -38,17 +38,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
 const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
+const morgan_1 = __importDefault(require("morgan"));
+const fs_1 = __importDefault(require("fs"));
 const controllers = __importStar(require("./Modules/controllers.index"));
 const db_connection_1 = require("./DB/db.connection");
 const Utils_1 = require("./Utils");
-const response_helper_utils_1 = require("./Utils/Response/response-helper.utils");
-const cors_1 = __importDefault(require("cors"));
 const socketio_gateways_1 = require("./Gateways/socketio.gateways");
 // Server setup
 const app = (0, express_1.default)();
-// Middleware
+// Middleware 
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+// create a write stream (in append mode) 
+var accessLogStream = fs_1.default.createWriteStream("access.log");
+// setup the logger
+app.use((0, morgan_1.default)("dev", { stream: accessLogStream }));
 // DB Connection
 (0, db_connection_1.dbConnection)();
 // Routes
@@ -61,10 +66,10 @@ app.use("/api/reacts", controllers.reactsController);
 app.use((err, req, res, next) => {
     if (err) {
         if (err instanceof Utils_1.HttpException) {
-            return res.status(err.statusCode).json((0, response_helper_utils_1.FailedResponse)(err.message, err.statusCode, err.error));
+            return res.status(err.statusCode).json((0, Utils_1.FailedResponse)(err.message, err.statusCode, err.error));
         }
         else {
-            res.status(500).json((0, response_helper_utils_1.FailedResponse)(err.message, 500, err));
+            res.status(500).json((0, Utils_1.FailedResponse)(err.message, 500, err));
         }
     }
 });

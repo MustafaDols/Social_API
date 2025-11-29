@@ -2,6 +2,7 @@ import mongoose from "mongoose"
 import { FriendShipStatusEnum , IFriendShip} from "../../Common"
 
 const friendshipSchema = new mongoose.Schema<IFriendShip>({
+    
     requestFromId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'

@@ -43,9 +43,14 @@ export class S3ClientService {
         await this.s3Client.send(putCommand)
         const signedUrl = await this.getFileWithSignedUrl(keyName)
         return {
-            Key: keyName,
+            key: keyName,
             url: signedUrl
         }
+    }
+
+    async UploadFilesOnS3(files: Express.Multer.File[], key: string) {
+        const keys = files.map(file => this.UploadFileOnS3(file, key))
+        return await Promise.all(keys)
     }
 
     async DeleteFileFromS3(key: string) {

@@ -67,4 +67,7 @@ interface IFriendShip extends Document<Types.ObjectId> {
     status: FriendShipStatusEnum
 }
 
+
+
+
 export { IUser, IEmailArgument, IRequest, IBlackListedToken, IFriendShip, IMessage, IConversation }

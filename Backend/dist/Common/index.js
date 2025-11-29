@@ -18,3 +18,5 @@ __exportStar(require("./Enums/user.enum"), exports);
 __exportStar(require("./Interfaces/user.interface"), exports);
 __exportStar(require("./Interfaces/response.interface"), exports);
 __exportStar(require("./Types/validators.types"), exports);
+__exportStar(require("./Interfaces/post.interface"), exports);
+__exportStar(require("./Interfaces/comments.interface"), exports);

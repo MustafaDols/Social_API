@@ -41,9 +41,13 @@ class S3ClientService {
         await this.s3Client.send(putCommand);
         const signedUrl = await this.getFileWithSignedUrl(keyName);
         return {
-            Key: keyName,
+            key: keyName,
             url: signedUrl
         };
+    }
+    async UploadFilesOnS3(files, key) {
+        const keys = files.map(file => this.UploadFileOnS3(file, key));
+        return await Promise.all(keys);
     }
     async DeleteFileFromS3(key) {
         const deleteCommand = new client_s3_1.DeleteObjectCommand({

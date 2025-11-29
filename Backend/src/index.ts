@@ -1,17 +1,26 @@
 import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
+import cors from "cors";
+import morgan from "morgan";
+import fs from "fs";
+
 import * as controllers from "./Modules/controllers.index";
 import { dbConnection } from "./DB/db.connection";
-import { HttpException } from "./Utils";
-import { FailedResponse } from "./Utils/Response/response-helper.utils";
-import cors from "cors";
+import { HttpException, FailedResponse } from "./Utils";
 import { ioIntializer } from "./Gateways/socketio.gateways";
+
+
 // Server setup
 const app = express();
 
-// Middleware
+// Middleware 
 app.use(cors())
 app.use(express.json())
+
+// create a write stream (in append mode) 
+var accessLogStream = fs.createWriteStream("access.log")
+// setup the logger
+app.use(morgan("dev", { stream: accessLogStream }))
 
 // DB Connection
 dbConnection()
@@ -42,7 +51,7 @@ process.on("unhandledRejection", (reason, promise) => {
 process.on("uncaughtException", (err) => {
     console.error(" Uncaught Exception:", err);
 });
- 
+
 // Start server 
 const port: number | string = process.env.PORT || 3000
 const server = app.listen(port, () => {

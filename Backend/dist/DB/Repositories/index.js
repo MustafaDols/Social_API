@@ -20,3 +20,4 @@ __exportStar(require("./black-listed.repository"), exports);
 __exportStar(require("./friendShip.repository"), exports);
 __exportStar(require("./conversation.repository"), exports);
 __exportStar(require("./messages.repository"), exports);
+__exportStar(require("./post.repository"), exports);
